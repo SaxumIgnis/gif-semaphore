@@ -1,6 +1,9 @@
 #! /usr/bin/python3
 
 from sys import argv
+import os
+import sys
+import subprocess
 import imageio
 
 CONV_LETTER = {
@@ -71,11 +74,20 @@ class GifMaker():
 
         self.__sentence += '++'
 
-        with imageio.get_writer('%s/%s.gif' % (outputdir, self.__sentence),
+        self.__location = '%s/%s.gif' % (outputdir, self.__sentence)
+        with imageio.get_writer(self.__location,
                                 mode='I', duration=self.__delay) as gif:
             for letter in self.__sentence:
                 image = imageio.imread('%s/%s.png' % (inputdir, letter))
                 gif.append_data(image)
+
+    def display(self):
+        if sys.platform == "win32":
+            os.startfile(self.__location)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, self.__location])
+        print(self.__location)
 
 
 if __name__ == "__main__":
@@ -84,4 +96,5 @@ if __name__ == "__main__":
     else:
         delay = DEFAULT_DELAY
     sentence = argv[1]
-    GifMaker(sentence, delay, 'resources', 'cache')
+    gif = GifMaker(sentence, delay, 'resources', 'cache')
+    gif.display()
