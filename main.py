@@ -66,6 +66,12 @@ class GifMaker():
                 previous_letter = CONV_LETTER[letter]
                 self.__sentence += previous_letter
 
+            elif letter == "?":
+                if previous_letter != '+':
+                    self.__sentence += '+'
+                self.__sentence += 'AR'
+                previous_letter = 'question'
+
             else:
                 if previous_letter == '+':
                     continue
