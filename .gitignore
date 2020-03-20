@@ -1,3 +1,8 @@
 cache/
+gif/
+build/
+dist/
+!dist/resources/
 *.pyc
-
+*.spec
+__pycache__
