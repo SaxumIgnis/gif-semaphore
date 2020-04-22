@@ -1,8 +1,7 @@
-cache/
-gif/
 build/
 dist/
 !dist/resources/
 *.pyc
 *.spec
+*.gif
 __pycache__
