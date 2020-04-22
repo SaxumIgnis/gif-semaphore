@@ -17,46 +17,90 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 
-import imageio
+import os
+import subprocess
+import sys
 from glob import glob
 
-import os
-import sys
-import subprocess
+import imageio
 
 CONV_LETTER = {
-    'a': 'A', 'A': 'A', '1': 'A',
-    'b': 'B', 'B': 'B', '2': 'B',
-    'c': 'C', 'C': 'C', '3': 'C',
-    'd': 'D', 'D': 'D', '4': 'D',
-    'e': 'E', 'E': 'E', '5': 'E',
-    'f': 'F', 'F': 'F', '6': 'F',
-    'g': 'G', 'G': 'G', '7': 'G',
-    'h': 'H', 'H': 'H', '8': 'H',
-    'i': 'I', 'I': 'I', '9': 'I',
-    'j': 'J', 'J': 'J',
-    'k': 'K', 'K': 'K', '0': 'K',
-    'l': 'L', 'L': 'L',
-    'm': 'M', 'M': 'M',
-    'n': 'N', 'N': 'N',
-    'o': 'O', 'O': 'O',
-    'p': 'P', 'P': 'P',
-    'q': 'Q', 'Q': 'Q',
-    'r': 'R', 'R': 'R',
-    's': 'S', 'S': 'S',
-    't': 'T', 'T': 'T',
-    'u': 'U', 'U': 'U',
-    'v': 'V', 'V': 'V',
-    'w': 'W', 'W': 'W',
-    'x': 'X', 'X': 'X',
-    'y': 'Y', 'Y': 'Y',
-    'z': 'Z', 'Z': 'Z',
-    'alpha': 'J',
-    'num': '0'
+    "a": "A",
+    "A": "A",
+    "à": "A",
+    "1": "A",
+    "b": "B",
+    "B": "B",
+    "2": "B",
+    "c": "C",
+    "C": "C",
+    "ç": "C",
+    "3": "C",
+    "d": "D",
+    "D": "D",
+    "4": "D",
+    "e": "E",
+    "E": "E",
+    "é": "E",
+    "è": "E",
+    "ê": "E",
+    "5": "E",
+    "f": "F",
+    "F": "F",
+    "6": "F",
+    "g": "G",
+    "G": "G",
+    "7": "G",
+    "h": "H",
+    "H": "H",
+    "8": "H",
+    "i": "I",
+    "I": "I",
+    "î": "I",
+    "9": "I",
+    "j": "J",
+    "J": "J",
+    "k": "K",
+    "K": "K",
+    "0": "K",
+    "l": "L",
+    "L": "L",
+    "m": "M",
+    "M": "M",
+    "n": "N",
+    "N": "N",
+    "o": "O",
+    "O": "O",
+    "ô": "O",
+    "p": "P",
+    "P": "P",
+    "q": "Q",
+    "Q": "Q",
+    "r": "R",
+    "R": "R",
+    "s": "S",
+    "S": "S",
+    "t": "T",
+    "T": "T",
+    "u": "U",
+    "U": "U",
+    "ù": "U",
+    "v": "V",
+    "V": "V",
+    "w": "W",
+    "W": "W",
+    "x": "X",
+    "X": "X",
+    "y": "Y",
+    "Y": "Y",
+    "z": "Z",
+    "Z": "Z",
+    "alpha": "J",
+    "num": "0",
 }
 
 
-class Converter():
+class Converter:
     """Convertisseur d'une phrase (sous forme de string)
     en sémaphore (au format gif)"""
 
@@ -85,7 +129,7 @@ class Converter():
                 if not numeric:
                     # pour le premier chiffre d'une séquence
                     # on bascule en numérique
-                    self.__sentence += CONV_LETTER['num']
+                    self.__sentence += CONV_LETTER["num"]
                     numeric = True
                 previous_letter = CONV_LETTER[letter]
                 self.__sentence += previous_letter
@@ -93,7 +137,7 @@ class Converter():
             elif letter.isalpha():
                 if numeric:
                     # après le dernier chiffre, on repasse en alphabétique
-                    self.__sentence += CONV_LETTER['alpha']
+                    self.__sentence += CONV_LETTER["alpha"]
                     numeric = False
                 elif previous_letter == CONV_LETTER[letter]:
                     # pas de double lettre en sémaphore
@@ -102,28 +146,30 @@ class Converter():
                 self.__sentence += previous_letter
 
             elif letter == "?":
-                if previous_letter != '+':
+                if previous_letter != "+":
                     # toujours un espace avant le ?
                     # en sémaphore
-                    self.__sentence += '+'
-                self.__sentence += 'AR'
-                previous_letter = 'question'
+                    self.__sentence += "+"
+                self.__sentence += "AR"
+                previous_letter = "question"
 
             else:
-                if previous_letter == '+':
+                if previous_letter == "+":
                     continue
-                previous_letter = '+'
+                previous_letter = "+"
                 self.__sentence += previous_letter
 
-        self.__sentence += '--'
+        self.__sentence += "--"
 
-        self.__location = outputfile if outputfile.endswith(
-            ".gif") else '{}.gif'.format(outputfile)
+        self.__location = (
+            outputfile if outputfile.endswith(".gif") else "{}.gif".format(outputfile)
+        )
 
-        with imageio.get_writer(self.__location,
-                                mode='I', duration=self.__delay) as gif:
+        with imageio.get_writer(
+            self.__location, mode="I", duration=self.__delay
+        ) as gif:
             for letter in self.__sentence:
-                for image in glob('{}/{}.*'.format(inputdir, letter)):
+                for image in glob("{}/{}.*".format(inputdir, letter)):
                     try:
                         image = imageio.imread(image)
                     except ValueError:
@@ -132,8 +178,8 @@ class Converter():
                         break
                 else:
                     raise FileNotFoundError(
-                        "pas de fichier valide pour la lettre {}".
-                        format(letter))
+                        "pas de fichier valide pour la lettre {}".format(letter)
+                    )
                 gif.append_data(image)
 
     def display(self):

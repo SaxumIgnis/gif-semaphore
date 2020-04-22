@@ -1,6 +1,6 @@
 # Générateur de messages semaphore GIF
 
-Petit projet qui consiste à automatiser la création de messages en sémaphore sous forme de gif animés   
+Petit projet qui consiste à automatiser la création de messages en sémaphore sous forme de gif animés
 
 Maintenant il a une GUI ^^
 
@@ -8,8 +8,7 @@ Maintenant il a une GUI ^^
 
 Télécharger et decompresser la release correspondant à votre OS
 
-Exécuter le fichier gif-semaphore (gif-semaphore.exe pour Windows)
-
+Exécuter le fichier gif-semaphore
 
 ### Ajouts de modèles
 
@@ -18,6 +17,7 @@ Les modèles doivent être ajoutés dans le dossier _resources_.
 Chaque modèle doit être placé dans son propre dossier.
 
 Un modèle est composé de :
+
 -   une image par lettre, en majuscule (A.png - Z.png)
 -   une image +.png pour l'espace
 -   une image -.png pour la fin de message
@@ -35,7 +35,6 @@ Les fichiers exécutables sont générés avec [pyinstaller](https://github.com/
 
 `$ pyinstaller -F -n gif-semaphore sources/gui.py`
 
-
 ### Dépendances
 
 -   [python 3.4+](https://www.python.org)
@@ -51,7 +50,7 @@ la Free Software Foundation, soit la version 3 de la licence, ou
 
 Ce programme est distribué dans l'espoir qu'il sera utile,
 mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de
-la qualité marchande ou l'adéquation à un usage particulier.  Voir le
+la qualité marchande ou l'adéquation à un usage particulier.  Voir la
 Licence publique générale GNU pour plus de détails.
 
 Vous devriez avoir reçu une copie de la licence publique générale de GNU

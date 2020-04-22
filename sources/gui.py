@@ -16,18 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import tkinter as tk
-from tkinter import filedialog
-import tkinter.messagebox as messagebox
-
 import os
+import tkinter as tk
+import tkinter.messagebox as messagebox
+from tkinter import filedialog
 
 import config
+import markdown as md
 from converter import Converter
+from tkinterhtml import HtmlFrame
 
 
 class Window(tk.Frame):
-
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.master = master
@@ -38,30 +38,22 @@ class Window(tk.Frame):
         # champ input
         self.sentence = tk.StringVar()
 
-        tk.Label(
-            self,
-            text="text",
-            font=("Helvetica", 12)
-        ).grid(row=1, sticky=tk.W, padx=10)
+        tk.Label(self, text="text", font=("Helvetica", 12)).grid(
+            row=1, sticky=tk.W, padx=10
+        )
 
         tk.Entry(
-            self,
-            font=("Helvetica", 12),
-            textvariable=self.sentence,
-            width=60
+            self, font=("Helvetica", 12), textvariable=self.sentence, width=60
         ).grid(row=2, columnspan=3, sticky=tk.W, padx=10)
 
         self.display = tk.IntVar()
 
         # champ save
         self.destinationFile = tk.StringVar()
-        self.destinationFile.set("{}/new.gif".format(config.DEFAULT_OUTPUT))
 
-        tk.Label(
-            self,
-            text="destination",
-            font=("Helvetica", 12)
-        ).grid(row=4, column=0, sticky=tk.W, padx=10)
+        tk.Label(self, text="destination", font=("Helvetica", 12)).grid(
+            row=4, column=0, sticky=tk.W, padx=10
+        )
 
         tk.Entry(
             self,
@@ -69,41 +61,30 @@ class Window(tk.Frame):
             textvariable=self.destinationFile,
             justify=tk.LEFT,
             width=38,
-            state="readonly"
+            state="readonly",
         ).grid(row=4, column=1, sticky=tk.W)
 
         tk.Button(
-            self,
-            text="Browse",
-            font=("Helvetica", 12),
-            command=self.clickSaveButton
+            self, text="Browse", font=("Helvetica", 12), command=self.clickSaveButton
         ).grid(row=4, column=2, padx=10)
 
         # champ modèle
-        tk.Label(
-            self,
-            text="model",
-            font=("Helvetica", 12)
-        ).grid(row=5, column=0, sticky=tk.W, padx=10)
+        tk.Label(self, text="model", font=("Helvetica", 12)).grid(
+            row=5, column=0, sticky=tk.W, padx=10
+        )
 
-        models = os.listdir("resources")
+        models = filter(lambda filename: "." not in filename, os.listdir("resources"))
         self.modelDir = tk.StringVar(self)
         self.modelDir.set(config.DEFAULT_INPUT)
-        tk.OptionMenu(
-            self,
-            self.modelDir,
-            *models
-        ).grid(row=5, column=1, padx=10)
+        tk.OptionMenu(self, self.modelDir, *models).grid(row=5, column=1, padx=10)
 
         # champ délai
 
         self.delay = tk.DoubleVar()
         self.delay.set(1.4)
-        tk.Label(
-            self,
-            text="frame time (s)",
-            font=("Helvetica", 12)
-        ).grid(row=6, column=0, padx=10)
+        tk.Label(self, text="frame time (s)", font=("Helvetica", 12)).grid(
+            row=6, column=0, padx=10
+        )
 
         tk.Scale(
             self,
@@ -113,7 +94,7 @@ class Window(tk.Frame):
             variable=self.delay,
             orient=tk.HORIZONTAL,
             font=("Helvetica", 12),
-            length=300
+            length=300,
         ).grid(row=6, column=1, columnspan=2)
 
         # bouton d'activation
@@ -122,30 +103,47 @@ class Window(tk.Frame):
             self,
             text="Display after creation",
             font=("Helvetica", 12),
-            variable=self.display
+            variable=self.display,
         ).grid(row=7, columnspan=2, sticky=tk.E)
 
         tk.Button(
-            self,
-            text="go",
-            font=("Helvetica", 12),
-            command=self.convertText
+            self, text="go", font=("Helvetica", 12), command=self.convertText
         ).grid(row=7, column=2, columnspan=2, padx=10, pady=10, sticky=tk.E)
 
+        # bouton "a propos"
+
+        tk.Button(
+            self, text="About", font=("Helvetica", 12), command=self.clickAboutButton
+        ).grid(row=1, column=2, padx=10, sticky=tk.E)
+
     def clickSaveButton(self):
-        self.destinationFile.set(filedialog.asksaveasfilename(
-            initialdir=config.DEFAULT_OUTPUT,
-            title="Select destination file",
-            filetypes=(("gif files", "*.gif"), ("all files", "*.*"))
-        ))
+        self.destinationFile.set(
+            filedialog.asksaveasfilename(
+                initialdir=config.DEFAULT_OUTPUT,
+                title="Select destination file",
+                filetypes=(("gif files", "*.gif"), ("all files", "*.*")),
+            )
+        )
+
+    def clickAboutButton(self):
+        with open("resources/LICENSE.md") as license:
+            about = tk.Toplevel(self.master)
+            about.title("About")
+
+            content = HtmlFrame(about)
+            content.set_content(md.markdown(license.read()))
+            content.grid()
 
     def convertText(self):
         converter = Converter()
+        if self.destinationFile.get() == "":
+            messagebox.showinfo("GIF maker", "No destination file set")
+            return
         converter.convert(
             self.sentence.get(),
             self.delay.get(),
-            'resources/{}'.format(self.modelDir.get()),
-            self.destinationFile.get()
+            "resources/{}".format(self.modelDir.get()),
+            self.destinationFile.get(),
         )
         if self.display.get() == 1:
             converter.display()
